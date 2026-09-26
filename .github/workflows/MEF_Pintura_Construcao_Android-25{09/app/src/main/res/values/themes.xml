@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.MEF" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/yellow</item>
+        <item name="android:navigationBarColor">@color/dark</item>
+        <item name="android:statusBarColor">@color/dark</item>
+    </style>
+</resources>
