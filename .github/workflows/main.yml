@@ -1,1 +1,95 @@
+from pathlib import Path
+import base64, zipfile, shutil
 
+img_path = Path("/mnt/data/1000031459.png")
+data = base64.b64encode(img_path.read_bytes()).decode("ascii")
+
+html = f"""<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#062a78">
+<title>M.E.F Pintura e Construção Civil</title>
+<style>
+*{{box-sizing:border-box}} body{{margin:0;font-family:Arial,sans-serif;background:#07101d;color:#fff}}
+.wrap{{max-width:760px;margin:auto;padding:14px}}
+.hero{{width:100%;border-radius:18px;display:block;box-shadow:0 8px 30px #0008}}
+h1{{font-size:25px;text-align:center;margin:18px 0 10px}}
+.grid{{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:16px 0}}
+button{{width:100%;padding:15px;border:0;border-radius:13px;background:#ffd000;color:#07101d;font-weight:800;font-size:15px}}
+.card{{background:#10213a;border:1px solid #24466e;border-radius:16px;padding:18px;margin:14px 0}}
+label{{display:block;margin:10px 0 5px;font-weight:bold}}
+input,select{{width:100%;padding:13px;border-radius:10px;border:1px solid #466486;background:#07101d;color:#fff;font-size:16px}}
+.total{{font-size:24px;color:#ffd000;font-weight:800;margin-top:15px}}
+a{{text-decoration:none;color:inherit}}
+ul{{line-height:1.9}}
+@media(max-width:480px){{.grid{{grid-template-columns:1fr}}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<img class="hero" src="data:image/png;base64,{data}" alt="M.E.F Pintura e Construção Civil">
+<h1>M.E.F Pintura e Construção Civil em Geral</h1>
+
+<div class="grid">
+<button onclick="document.getElementById('orcamento').scrollIntoView()">💰 ORÇAMENTO POR m²</button>
+<button onclick="document.getElementById('servicos').scrollIntoView()">🎨 SERVIÇOS</button>
+<a href="https://wa.me/5511987731981?text=Olá,%20M.E.F!%20Gostaria%20de%20solicitar%20um%20orçamento."><button>📲 WHATSAPP</button></a>
+<a href="https://instagram.com/mef.construcao.e.pintura.0026"><button>📸 INSTAGRAM</button></a>
+</div>
+
+<section class="card" id="orcamento">
+<h2>Orçamento por m²</h2>
+<label>Serviço</label>
+<select id="servico">
+<option>Pintura</option><option>Reboco</option><option>Acabamento</option><option>Reforma</option><option>Outros serviços</option>
+</select>
+<label>Área em m²</label><input id="area" type="number" min="0" step="0.01" placeholder="Ex.: 100">
+<label>Preço por m² (R$)</label><input id="preco" type="number" min="0" step="0.01" placeholder="Ex.: 25,00">
+<br><br><button onclick="calcular()">CALCULAR</button>
+<div id="resultado" class="total"></div>
+<br>
+<a href="https://wa.me/5511987731981?text=Olá,%20M.E.F!%20Gostaria%20de%20solicitar%20um%20orçamento."><button>ENVIAR PELO WHATSAPP</button></a>
+</section>
+
+<section class="card" id="servicos">
+<h2>Nossos serviços</h2>
+<ul>
+<li>Pintura residencial</li><li>Pintura comercial</li><li>Texturas e grafiatos</li>
+<li>Pequenos reparos</li><li>Reformas em geral</li><li>Acabamentos de qualidade</li>
+<li>Construção civil</li><li>Serviço com compromisso</li>
+</ul>
+</section>
+
+<section class="card">
+<h2>Contato</h2>
+<p>📱 Marcelo: (35) 9.9908-0356</p>
+<p>📱 Fabiano: (11) 9.8773-1981</p>
+<p>📍 Itapeva-MG</p>
+<a href="https://www.google.com/maps/search/?api=1&query=Itapeva-MG"><button>📍 ABRIR LOCALIZAÇÃO</button></a>
+</section>
+</div>
+<script>
+function calcular(){{
+ const a=parseFloat(document.getElementById('area').value.replace(',','.'));
+ const p=parseFloat(document.getElementById('preco').value.replace(',','.'));
+ const s=document.getElementById('servico').value;
+ const r=document.getElementById('resultado');
+ if(!a || a<=0 || isNaN(p) || p<0){{r.textContent='Informe a área e o preço por m².';return;}}
+ const t=a*p;
+ r.textContent=s+': R$ '+t.toLocaleString('pt-BR',{{minimumFractionDigits:2,maximumFractionDigits:2}});
+}}
+</script>
+</body>
+</html>"""
+
+out = Path("/mnt/data/MEF_Pintura_Construcao_Web.html")
+out.write_text(html, encoding="utf-8")
+
+zip_out = Path("/mnt/data/MEF_Pintura_Construcao_Web.zip")
+with zipfile.ZipFile(zip_out, "w", zipfile.ZIP_DEFLATED) as z:
+    z.write(out, out.name)
+
+print(f"Arquivo web criado: {out}")
+print(f"Pacote ZIP criado: {zip_out}")
